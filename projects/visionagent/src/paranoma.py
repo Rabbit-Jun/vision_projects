@@ -96,7 +96,7 @@ class Panorama(QMainWindow):
         status, self.img_stitched = stitcher.stitch(self.imgs)
         if status == cv2.STITCHER_OK:
             self.img_display = self.img_stitched.copy()
-            self.history.append(self.img_display.copy())  # Save to history
+            self.history.append(self.img_display.copy())  
             cv2.imshow("Image stitched panorama", self.img_display)
             cv2.setMouseCallback("Image stitched panorama", self.draw)
             self.textButton.setEnabled(True)
@@ -130,7 +130,7 @@ class Panorama(QMainWindow):
             text_x = rect_center_x - text_width // 2
             text_y = rect_center_y + text_height // 2
 
-            self.history.append(self.img_display.copy())  # Save to history before change
+            self.history.append(self.img_display.copy())  
             cv2.putText(self.img_display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.putText(self.img_stitched, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.imshow("Image stitched panorama", self.img_display)
@@ -140,8 +140,7 @@ class Panorama(QMainWindow):
         self.drawing = True
         self.stopDrawButton.setEnabled(True)
         self.label.setText("왼쪽 버튼으로 그림을 그리세요.")
-        self.history.append(self.img_display.copy())  # Save to history before drawing
-
+        self.history.append(self.img_display.copy())  
         def painting(event, x, y, flags, param):
             if self.drawing and (event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON)):
                 cv2.circle(self.img_display, (x, y), self.brush_size, self.line_color, -1)
