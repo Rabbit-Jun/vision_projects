@@ -100,7 +100,7 @@ class VideoSpecialEffect(QMainWindow):
             self.rectangles.append(((x, y), (x + 200, y + 200), (255, 0, 0)))
 
     def saveFunction(self):
-        fname, _ = QFileDialog.getSaveFileName(self, "파일 저장", "./", "Images (*.png *.jpg *.bmp)")
+        fname, _ = QFileDialog.getSaveFileName(self, "파일 저장", "./data")
         if fname and self.stack is not None:
             cv.imwrite(fname, self.stack)
 
