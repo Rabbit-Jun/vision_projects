@@ -80,7 +80,7 @@ class VideoSpecialEffect(QMainWindow):
             cv.imshow('Special effect', special_img)
             key = cv.waitKey(1)
             if key == ord("c"):
-                self.imgs.append(cv.resize(frame, dsize=(400, 300)))  # Resize for consistent dimensions
+                self.imgs.append(cv.resize(special_img, dsize=(400, 300)))  # Resize for consistent dimensions
                 if len(self.imgs) == 1:
                     self.stack = self.imgs[0]
                 else:
