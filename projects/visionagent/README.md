@@ -1,13 +1,13 @@
 ## Project
 
-- 음성 데이터를 이용한 Connectionist Temporal Classification (CTC) 기반 음성 인식 모델
-- input : 음성 데이터 파일(.wav)
+- 내용
+- 
 
 
 ## Folder Structure
 
 ```
-project
+visionagent
 ├── data
 │ 
 ├── src
@@ -37,7 +37,8 @@ poetry install
 
 ## 코드 실행
 
-project에서 
+- `/project/visionagent`로 이동한 후, 아래 명령어들을 실행하여 코드 실행이 가능합니다.
+- `paranoma.py` 에서 사진읽기를 실행하기 위해서는 data에 이미지 파일이 존재해야 합니다.
 ```
 python src/paranoma.py
 python src/special_effect.py

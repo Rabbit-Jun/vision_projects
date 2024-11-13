@@ -6,10 +6,11 @@ authors = ["juneon <junun24@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.14"
 opencv-python = "^4.10.0.84"
 pyqt6 = "^6.7.1"
 opencv-contrib-python = "^4.10.0.84"
+pyinstaller = "^6.11.1"
 
 
 [build-system]
