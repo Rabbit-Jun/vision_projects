@@ -17,6 +17,7 @@ class Panorama(QMainWindow):
         self.drawButton = QPushButton("그리기", self)
         self.stopDrawButton = QPushButton("그리기 해제", self)
         self.colorButton = QPushButton("색 변경", self)
+        self.undoButton = QPushButton("되돌리기", self)
         self.saveButton = QPushButton("저장", self)
         quitButton = QPushButton("나가기", self)
         self.label = QLabel("환영합니다!", self)
@@ -27,8 +28,9 @@ class Panorama(QMainWindow):
         self.drawButton.setGeometry(310, 25, 100, 30)
         self.stopDrawButton.setGeometry(410, 25, 100, 30)
         self.colorButton.setGeometry(510, 25, 100, 30)
-        self.saveButton.setGeometry(610, 25, 100, 30)
-        quitButton.setGeometry(720, 25, 100, 30)
+        self.undoButton.setGeometry(610, 25, 100, 30)
+        self.saveButton.setGeometry(710, 25, 100, 30)
+        quitButton.setGeometry(810, 25, 100, 30)
         self.label.setGeometry(10, 70, 600, 170)
 
         self.stitchButton.setEnabled(False)
@@ -36,6 +38,7 @@ class Panorama(QMainWindow):
         self.drawButton.setEnabled(False)
         self.stopDrawButton.setEnabled(False)
         self.colorButton.setEnabled(False)
+        self.undoButton.setEnabled(False)
         self.saveButton.setEnabled(False)
 
         collectButton.clicked.connect(self.collectFunction)
@@ -44,6 +47,7 @@ class Panorama(QMainWindow):
         self.drawButton.clicked.connect(self.drawFunction)
         self.stopDrawButton.clicked.connect(self.stopDrawingFunction)
         self.colorButton.clicked.connect(self.changeColorFunction)
+        self.undoButton.clicked.connect(self.undoFunction)
         self.saveButton.clicked.connect(self.saveFunction)
         quitButton.clicked.connect(self.quitFunction)
 
@@ -53,6 +57,7 @@ class Panorama(QMainWindow):
         self.drawing = False
         self.brush_size = 5
         self.line_color = (255, 0, 0)
+        self.history = []
 
     def collectFunction(self):
         self.stitchButton.setEnabled(False)
@@ -91,11 +96,13 @@ class Panorama(QMainWindow):
         status, self.img_stitched = stitcher.stitch(self.imgs)
         if status == cv2.STITCHER_OK:
             self.img_display = self.img_stitched.copy()
+            self.history.append(self.img_display.copy())  # Save to history
             cv2.imshow("Image stitched panorama", self.img_display)
             cv2.setMouseCallback("Image stitched panorama", self.draw)
             self.textButton.setEnabled(True)
             self.drawButton.setEnabled(True)
             self.colorButton.setEnabled(True)
+            self.undoButton.setEnabled(True)
         else:
             winsound.Beep(3000, 500)
             self.label.setText("파노라마 제작에 실패했습니다. 다시 시도하세요.")
@@ -123,6 +130,7 @@ class Panorama(QMainWindow):
             text_x = rect_center_x - text_width // 2
             text_y = rect_center_y + text_height // 2
 
+            self.history.append(self.img_display.copy())  # Save to history before change
             cv2.putText(self.img_display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.putText(self.img_stitched, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.imshow("Image stitched panorama", self.img_display)
@@ -132,6 +140,7 @@ class Panorama(QMainWindow):
         self.drawing = True
         self.stopDrawButton.setEnabled(True)
         self.label.setText("왼쪽 버튼으로 그림을 그리세요.")
+        self.history.append(self.img_display.copy())  # Save to history before drawing
 
         def painting(event, x, y, flags, param):
             if self.drawing and (event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON)):
@@ -162,8 +171,14 @@ class Panorama(QMainWindow):
         if color.isValid():
             self.line_color = (color.red(), color.green(), color.blue())
 
+    def undoFunction(self):
+        if self.history:
+            self.img_display = self.history.pop()
+            self.img_stitched = self.img_display.copy()
+            cv2.imshow("Image stitched panorama", self.img_display)
+
     def saveFunction(self):
-        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./data")
+        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./")
         if fname[0]:
             cv2.imwrite(fname[0], self.img_stitched)
 
