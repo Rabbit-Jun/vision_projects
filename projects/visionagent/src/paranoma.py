@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QColor
 import cv2
 import numpy as np
 import winsound
@@ -8,12 +9,14 @@ class Panorama(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("파노라마 영상")
-        self.setGeometry(200, 200, 800, 200)  # Adjusted for new button
+        self.setGeometry(200, 200, 1000, 200)
 
         collectButton = QPushButton("촬영", self)
         self.stitchButton = QPushButton("파노라마", self)
         self.textButton = QPushButton("글자 입력", self)
-        self.drawButton = QPushButton("그리기", self)  # New draw button
+        self.drawButton = QPushButton("그리기", self)
+        self.stopDrawButton = QPushButton("그리기 해제", self)
+        self.colorButton = QPushButton("색 변경", self)
         self.saveButton = QPushButton("저장", self)
         quitButton = QPushButton("나가기", self)
         self.label = QLabel("환영합니다!", self)
@@ -21,20 +24,26 @@ class Panorama(QMainWindow):
         collectButton.setGeometry(10, 25, 100, 30)
         self.stitchButton.setGeometry(110, 25, 100, 30)
         self.textButton.setGeometry(210, 25, 100, 30)
-        self.drawButton.setGeometry(310, 25, 100, 30)  # Position for draw button
-        self.saveButton.setGeometry(410, 25, 100, 30)
-        quitButton.setGeometry(550, 25, 100, 30)
+        self.drawButton.setGeometry(310, 25, 100, 30)
+        self.stopDrawButton.setGeometry(410, 25, 100, 30)
+        self.colorButton.setGeometry(510, 25, 100, 30)
+        self.saveButton.setGeometry(610, 25, 100, 30)
+        quitButton.setGeometry(720, 25, 100, 30)
         self.label.setGeometry(10, 70, 600, 170)
 
         self.stitchButton.setEnabled(False)
         self.textButton.setEnabled(False)
-        self.drawButton.setEnabled(False)  # Enable after stitching
+        self.drawButton.setEnabled(False)
+        self.stopDrawButton.setEnabled(False)
+        self.colorButton.setEnabled(False)
         self.saveButton.setEnabled(False)
 
         collectButton.clicked.connect(self.collectFunction)
         self.stitchButton.clicked.connect(self.stitchFunction)
         self.textButton.clicked.connect(self.textFunction)
-        self.drawButton.clicked.connect(self.drawFunction)  # Connect draw button
+        self.drawButton.clicked.connect(self.drawFunction)
+        self.stopDrawButton.clicked.connect(self.stopDrawingFunction)
+        self.colorButton.clicked.connect(self.changeColorFunction)
         self.saveButton.clicked.connect(self.saveFunction)
         quitButton.clicked.connect(self.quitFunction)
 
@@ -49,6 +58,7 @@ class Panorama(QMainWindow):
         self.stitchButton.setEnabled(False)
         self.textButton.setEnabled(False)
         self.drawButton.setEnabled(False)
+        self.colorButton.setEnabled(False)
         self.saveButton.setEnabled(False)
         self.label.setText("c를 여러 번 눌러 수집하고 끝나면 q를 눌러 비디오를 끕니다.")
 
@@ -84,20 +94,11 @@ class Panorama(QMainWindow):
             cv2.imshow("Image stitched panorama", self.img_display)
             cv2.setMouseCallback("Image stitched panorama", self.draw)
             self.textButton.setEnabled(True)
-            self.drawButton.setEnabled(True)  # Enable draw button after stitching
+            self.drawButton.setEnabled(True)
+            self.colorButton.setEnabled(True)
         else:
             winsound.Beep(3000, 500)
             self.label.setText("파노라마 제작에 실패했습니다. 다시 시도하세요.")
-
-    def draw(self, event, x, y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.rect_start = (x, y)
-        elif event == cv2.EVENT_RBUTTONDOWN and self.rect_start:
-            self.rect_end = (x, y)
-            self.img_display = self.img_stitched.copy()
-            cv2.rectangle(self.img_display, self.rect_start, self.rect_end, (0, 0, 255), 2)
-            cv2.imshow("Image stitched panorama", self.img_display)
-            self.text_entered = False
 
     def textFunction(self):
         if not self.rect_start or not self.rect_end:
@@ -119,33 +120,50 @@ class Panorama(QMainWindow):
                     break
                 font_scale += 0.1
 
-            self.text = text
-            self.font_scale = max(0.1, font_scale)
-            self.text_width, self.text_height = text_width, text_height
-            self.rect_center_x, self.rect_center_y = rect_center_x, rect_center_y
-
             text_x = rect_center_x - text_width // 2
             text_y = rect_center_y + text_height // 2
 
-            cv2.putText(self.img_display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, self.font_scale, (0, 255, 0), 2)
-            cv2.putText(self.img_stitched, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, self.font_scale, (0, 255, 0), 2)
+            cv2.putText(self.img_display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
+            cv2.putText(self.img_stitched, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.imshow("Image stitched panorama", self.img_display)
             self.text_entered = True
 
     def drawFunction(self):
         self.drawing = True
+        self.stopDrawButton.setEnabled(True)
         self.label.setText("왼쪽 버튼으로 그림을 그리세요.")
 
         def painting(event, x, y, flags, param):
-            if event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON):
+            if self.drawing and (event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON)):
                 cv2.circle(self.img_display, (x, y), self.brush_size, self.line_color, -1)
                 cv2.circle(self.img_stitched, (x, y), self.brush_size, self.line_color, -1)
                 cv2.imshow("Image stitched panorama", self.img_display)
 
         cv2.setMouseCallback("Image stitched panorama", painting)
 
+    def stopDrawingFunction(self):
+        self.drawing = False
+        self.stopDrawButton.setEnabled(False)
+        self.label.setText("그리기가 해제되었습니다. 사각형을 다시 그릴 수 있습니다.")
+        cv2.setMouseCallback("Image stitched panorama", self.draw)
+
+    def draw(self, event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.rect_start = (x, y)
+        elif event == cv2.EVENT_RBUTTONDOWN and self.rect_start:
+            self.rect_end = (x, y)
+            self.img_display = self.img_stitched.copy()
+            cv2.rectangle(self.img_display, self.rect_start, self.rect_end, (0, 0, 255), 2)
+            cv2.imshow("Image stitched panorama", self.img_display)
+            self.text_entered = False
+
+    def changeColorFunction(self):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.line_color = (color.red(), color.green(), color.blue())
+
     def saveFunction(self):
-        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./")
+        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./data")
         if fname[0]:
             cv2.imwrite(fname[0], self.img_stitched)
 
