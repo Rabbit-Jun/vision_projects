@@ -22,6 +22,12 @@
 visionagent
 ├── data
 │ 
+├── build
+│ └──paranoma
+│ └──special_effect
+├── dist
+│ └──paranoma.exe
+│ └──special_effect.exe
 ├── src
 │ └── paranoma.py 
 │ └── special_effect.py
