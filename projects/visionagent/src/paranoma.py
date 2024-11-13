@@ -169,7 +169,7 @@ class Panorama(QMainWindow):
     def changeColorFunction(self):
         color = QColorDialog.getColor()
         if color.isValid():
-            self.line_color = (color.red(), color.green(), color.blue())
+            self.line_color = (color.blue(), color.green(), color.red())
 
     def undoFunction(self):
         if self.history:
@@ -178,7 +178,7 @@ class Panorama(QMainWindow):
             cv2.imshow("Image stitched panorama", self.img_display)
 
     def saveFunction(self):
-        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./")
+        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./data")
         if fname[0]:
             cv2.imwrite(fname[0], self.img_stitched)
 
