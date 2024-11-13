@@ -1,0 +1,11 @@
+name: vision  
+channels:
+  - defaults
+  - conda-forge  
+dependencies:
+  - python=3.10  
+  - opencv=4.10.0  
+  - pyqt=6.7.1 
+  - pip  
+  - pip:
+    - opencv-contrib-python==4.10.0.84  
