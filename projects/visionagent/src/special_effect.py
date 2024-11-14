@@ -13,7 +13,7 @@ class VideoSpecialEffect(QMainWindow):
         self.saveButton.setGeometry(280, 50, 100, 30)
         self.saveButton.setEnabled(False)
         self.saveButton.clicked.connect(self.saveFunction)
-        self.label.setGeometry(10, 70, 600, 170)
+        self.label.setGeometry(20, 50, 280, 30)
 
         videoButton = QPushButton('비디오 시작', self)
         self.pickCombo = QComboBox(self)
@@ -32,7 +32,7 @@ class VideoSpecialEffect(QMainWindow):
         
     def videoSpecialEffectFunction(self):
         self.saveButton.setEnabled(False)
-        self.label.setText("c를 여러 번 눌러 수집하고 끝나면 q를 눌러 비디오를 끕니다.")
+        self.label.setText("원하는 영역을 click하여 필터를 적용하세요. \n c:캡쳐    q:종료")
         self.cap = cv.VideoCapture(0, cv.CAP_DSHOW)
         if not self.cap.isOpened(): 
             sys.exit('카메라 연결 실패')
@@ -64,15 +64,18 @@ class VideoSpecialEffect(QMainWindow):
                 elif pick_effect == 2:  # 카툰
                     effect_roi = cv.stylization(roi, sigma_s=60, sigma_r=0.45)
                 elif pick_effect == 3:  # 연필 스케치(명암)
-                    effect_roi, _ = cv.pencilSketch(roi, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
+                    _, effect_roi = cv.pencilSketch(roi, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
+                    
                 elif pick_effect == 4:  # 연필 스케치(컬러)
                     _, effect_roi = cv.pencilSketch(roi, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
+                    
                 elif pick_effect == 5:  # 유화
                     effect_roi = cv.xphoto.oilPainting(roi, 10, 1, cv.COLOR_BGR2Lab)
                 else:
                     effect_roi = roi
 
                 special_img[y1:y2, x1:x2] = effect_roi
+                
 
             for rect in self.rectangles:
                 cv.rectangle(special_img, rect[0], rect[1], rect[2], 2)
@@ -100,7 +103,7 @@ class VideoSpecialEffect(QMainWindow):
             self.rectangles.append(((x, y), (x + 200, y + 200), (255, 0, 0)))
 
     def saveFunction(self):
-        fname, _ = QFileDialog.getSaveFileName(self, "파일 저장", "./data")
+        fname, _ = QFileDialog.getSaveFileName(self, "파일 저장", "./", "Images (*.png *.jpg *.bmp)")
         if fname and self.stack is not None:
             cv.imwrite(fname, self.stack)
 
