@@ -5,8 +5,8 @@ channels:
 dependencies:
   - python=3.10  
   - opencv=4.10.0  
-  - pyqt=6.7.1 
   - pip  
+#  - pyqt=6.7.1 
   - pip:
     - opencv-contrib-python==4.10.0.84  
     - pyinstaller ==6.11.1
