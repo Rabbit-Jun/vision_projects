@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import QColor
-import cv2
+import cv2 as cv2
 import numpy as np
 import winsound
 import sys
@@ -77,11 +77,12 @@ class Panorama(QMainWindow):
             if not ret:
                 break
 
-            cv2.imshow("video display", frame)
+            flipped_frame = cv2.flip(frame, 1)  # 좌우 반전
+            cv2.imshow("video display", flipped_frame)
 
             key = cv2.waitKey(1)
             if key == ord("c"):
-                self.imgs.append(frame)
+                self.imgs.append(flipped_frame)
             elif key == ord("q"):
                 self.cap.release()
                 cv2.destroyWindow("video display")
@@ -95,6 +96,7 @@ class Panorama(QMainWindow):
         stitcher = cv2.Stitcher_create()
         status, self.img_stitched = stitcher.stitch(self.imgs)
         if status == cv2.STITCHER_OK:
+            self.img_stitched = cv2.flip(self.img_stitched, 1)  # 좌우 반전
             self.img_display = self.img_stitched.copy()
             self.history.append(self.img_display.copy())  
             cv2.imshow("Image stitched panorama", self.img_display)
@@ -130,7 +132,7 @@ class Panorama(QMainWindow):
             text_x = rect_center_x - text_width // 2
             text_y = rect_center_y + text_height // 2
 
-            self.history.append(self.img_display.copy())  
+            self.history.append(self.img_display.copy())  # Save to history before change
             cv2.putText(self.img_display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.putText(self.img_stitched, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, self.line_color, 2)
             cv2.imshow("Image stitched panorama", self.img_display)
@@ -140,7 +142,8 @@ class Panorama(QMainWindow):
         self.drawing = True
         self.stopDrawButton.setEnabled(True)
         self.label.setText("왼쪽 버튼으로 그림을 그리세요.")
-        self.history.append(self.img_display.copy())  
+        self.history.append(self.img_display.copy())  # Save to history before drawing
+
         def painting(event, x, y, flags, param):
             if self.drawing and (event == cv2.EVENT_LBUTTONDOWN or (event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON)):
                 cv2.circle(self.img_display, (x, y), self.brush_size, self.line_color, -1)
@@ -177,7 +180,7 @@ class Panorama(QMainWindow):
             cv2.imshow("Image stitched panorama", self.img_display)
 
     def saveFunction(self):
-        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./data")
+        fname = QFileDialog.getSaveFileName(self, "파일 저장", "./")
         if fname[0]:
             cv2.imwrite(fname[0], self.img_stitched)
 
