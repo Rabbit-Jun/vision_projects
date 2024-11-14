@@ -47,7 +47,7 @@ visionagent
 │ └── panorama.py 
 │ └── special_effect.py
 │
-├── environment.yml
+├── environment.yaml
 └── poetry.lock
 │
 ├── pyproject.toml
@@ -59,9 +59,9 @@ visionagent
 - Anaconda Powerell Prompt
 
 ## conda에서 라이브러리 설치 방법
-`environment.yml`이 있는 visionagent 디렉터리에서 아래의 명령어를 실행합니다.
+`environment.yaml`이 있는 visionagent 디렉터리에서 아래의 명령어를 실행합니다.
 ```powershell
-conda env create -f environment.yml
+conda env create -f environment.yaml
 ```
 그 후 생성된 가상환경 `vision`을 활성화 시키고 `pip install PyQt6` 해줍니다.  
 
