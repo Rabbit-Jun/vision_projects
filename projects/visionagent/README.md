@@ -55,11 +55,11 @@ visionagent
 - Anaconda Powerell Prompt
 
 ## conda에서 라이브러리 설치 방법
-```
+```powershell
 conda env create -f environment.yml
 ```
 ## poetry에서 라이브러리 설치 방법
-```
+```powershell
 poetry install
 ``` 
 
@@ -69,12 +69,12 @@ poetry install
 - `/project/visionagent`로 이동한 후, 아래 명령어들을 실행하여 코드 실행이 가능합니다.
 - 
 ### panorama
-```
+```powershell
 python src/panorama.py 
 dist/panorama.exe
 ```
 ### special_effect
-```
+```powershell
 python src/special_effect.py
 dist/special_effect.exe
 ```
