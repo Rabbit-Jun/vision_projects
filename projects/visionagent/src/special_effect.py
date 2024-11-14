@@ -31,7 +31,6 @@ class VideoSpecialEffect(QMainWindow):
         self.stack = None
         
     def videoSpecialEffectFunction(self):
-        # Clear rectangles to start fresh
         self.rectangles = []
         self.saveButton.setEnabled(False)
         self.label.setText("원하는 영역을 click하여 필터를 적용하세요. \n c:캡쳐    q:종료")
@@ -48,15 +47,16 @@ class VideoSpecialEffect(QMainWindow):
             if not ret: 
                 break
 
+            frame = cv.flip(frame, 1)  # 좌우 반전 처리
             pick_effect = self.pickCombo.currentIndex()
-            special_img = frame.copy()  # Start with the original frame
+            special_img = frame.copy()  # 원본 프레임에서 시작
 
             for rect in self.rectangles:
                 x1, y1 = rect[0]
                 x2, y2 = rect[1]
                 roi = frame[y1:y2, x1:x2]
 
-                # Apply the selected effect on the ROI
+                # 선택한 효과를 ROI에 적용
                 if pick_effect == 1:  # 엠보싱
                     femboss = np.array([[-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
                     gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
@@ -84,7 +84,7 @@ class VideoSpecialEffect(QMainWindow):
             cv.imshow('Special effect', special_img)
             key = cv.waitKey(1)
             if key == ord("c"):
-                self.imgs.append(cv.resize(special_img, dsize=(400, 300)))  # Resize for consistent dimensions
+                self.imgs.append(cv.resize(special_img, dsize=(400, 300)))  # 일관된 크기로 조정
                 if len(self.imgs) == 1:
                     self.stack = self.imgs[0]
                 else:
@@ -96,6 +96,7 @@ class VideoSpecialEffect(QMainWindow):
                 break
         if self.stack is not None:
             self.saveButton.setEnabled(True)
+
 
     def draw(self, event, x, y, flags, param):
         if event == cv.EVENT_LBUTTONDOWN:
