@@ -31,6 +31,8 @@ class VideoSpecialEffect(QMainWindow):
         self.stack = None
         
     def videoSpecialEffectFunction(self):
+        # Clear rectangles to start fresh
+        self.rectangles = []
         self.saveButton.setEnabled(False)
         self.label.setText("원하는 영역을 click하여 필터를 적용하세요. \n c:캡쳐    q:종료")
         self.cap = cv.VideoCapture(0, cv.CAP_DSHOW)
@@ -75,7 +77,6 @@ class VideoSpecialEffect(QMainWindow):
                     effect_roi = roi
 
                 special_img[y1:y2, x1:x2] = effect_roi
-                
 
             for rect in self.rectangles:
                 cv.rectangle(special_img, rect[0], rect[1], rect[2], 2)
