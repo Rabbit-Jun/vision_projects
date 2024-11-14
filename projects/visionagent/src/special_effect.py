@@ -17,7 +17,7 @@ class VideoSpecialEffect(QMainWindow):
 
         videoButton = QPushButton('비디오 시작', self)
         self.pickCombo = QComboBox(self)
-        self.pickCombo.addItems(['기본', '엠보싱', '카툰', '연필 스케치(명암)', '연필 스케치(컬러)', '유화'])
+        self.pickCombo.addItems(['기본', '엠보싱', '카툰',  '연필 스케치', '유화'])
         quitButton = QPushButton('나가기', self)
 
         videoButton.setGeometry(10, 10, 140, 30)
@@ -65,13 +65,11 @@ class VideoSpecialEffect(QMainWindow):
                     effect_roi = cv2.cvtColor(effect_roi, cv2.COLOR_GRAY2BGR)
                 elif pick_effect == 2:  # 카툰
                     effect_roi = cv2.stylization(roi, sigma_s=60, sigma_r=0.45)
-                elif pick_effect == 3:  # 연필 스케치(명암)
+                    
+                elif pick_effect == 3:  # 연필 스케치(컬러)
                     _, effect_roi = cv2.pencilSketch(roi, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
                     
-                elif pick_effect == 4:  # 연필 스케치(컬러)
-                    _, effect_roi = cv2.pencilSketch(roi, sigma_s=60, sigma_r=0.07, shade_factor=0.02)
-                    
-                elif pick_effect == 5:  # 유화
+                elif pick_effect == 4:  # 유화
                     effect_roi = cv2.xphoto.oilPainting(roi, 10, 1, cv2.COLOR_BGR2Lab)
                 else:
                     effect_roi = roi
