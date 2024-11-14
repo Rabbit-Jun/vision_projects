@@ -71,14 +71,14 @@ poetry install
 ## 코드 실행
 
 - `/visionagent`로 이동한 후, 아래 명령어들을 실행하여 코드 실행이 가능합니다.
-- 
+ 
 ### panorama
 ```powershell
-python src/panorama.py 
-dist/panorama.exe
+python src/panorama.py  # 스크립트 파일 실행
+dist/panorama.exe  # exe 파일 실행
 ```
 ### special_effect
 ```powershell
-python src/special_effect.py
-dist/special_effect.exe
+python src/special_effect.py  # 스크립트 파일 실행
+dist/special_effect.exe  # exe 파일 실행
 ```
