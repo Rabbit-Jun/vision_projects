@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['src\\paranoma.py'],
+    ['src\\panorama.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='paranoma',
+    name='panorama',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

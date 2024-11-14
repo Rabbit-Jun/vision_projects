@@ -1,4 +1,4 @@
-## paranoma
+## panorama
 
 -  컴퓨터와 연결된 캠을 이용하여 파라노마를 만들고 해당 파라노마를 꾸밀 수 있는 기능을 구현하였습니다.  
 -  파일을 저장할 때 png, jpg 와 같은 확장자를 사용해야 합니다.
@@ -34,13 +34,13 @@ visionagent
 ├── data
 │ 
 ├── build
-│ └──paranoma
+│ └──panorama
 │ └──special_effect
 ├── dist
-│ └──paranoma.exe
+│ └──panorama.exe
 │ └──special_effect.exe
 ├── src
-│ └── paranoma.py 
+│ └── panorama.py 
 │ └── special_effect.py
 │
 ├── environment.yml
@@ -70,8 +70,8 @@ poetry install
 - 
 ### paranoma
 ```
-python src/paranoma.py 
-dist/paranoma.exe
+python src/panorama.py 
+dist/panorama.exe
 ```
 ### special_effect
 ```
